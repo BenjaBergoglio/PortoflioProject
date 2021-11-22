@@ -31,7 +31,6 @@ SET SaleDateConverted = CONVERT(date,SaleDate)
 
 select *
 from SQLDataCleaningProject.dbo.NashvilleHousing
---where propertyAddress is null
 Order by ParcelID
 
 select a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress,b.PropertyAddress)
@@ -55,12 +54,11 @@ where a.PropertyAddress is null
 
 ---------------------------------------------------------------------------------------------------------------------------
 
---Breaking out Address into Individual Columns (Address, City, State)
+--Breaking out Address into Individual Columns from Property (Address, City, State)
 
 
 select PropertyAddress
 from SQLDataCleaningProject.dbo.NashvilleHousing
---where propertyAddress is null
 Order by ParcelID
 
 
@@ -88,10 +86,7 @@ update NashvilleHousing
 SET PropertySplitCity = SUBSTRING(PropertyAddress,CHARINDEX(',',PropertyAddress)+1,LEN(PropertyAddress))
 
 
-Select * 
-from SQLDataCleaningProject.dbo.NashvilleHousing
-
-
+--Breaking out Address into Individual Columns from owners (Address, City, State)
 
 Select OwnerAddress
 from SQLDataCleaningProject.dbo.NashvilleHousing
@@ -105,7 +100,6 @@ PARSENAME(REPLACE(OwnerAddress,',','.'),1)
 from SQLDataCleaningProject.dbo.NashvilleHousing
 
 
-
 ALTER TABLE NashvilleHousing
 ADD OwnerSplitAddress Nvarchar(255);
 
@@ -113,13 +107,11 @@ update NashvilleHousing
 SET OwnerSplitAddress = PARSENAME(REPLACE(OwnerAddress,',','.'),3)
 
 
-
 ALTER TABLE NashvilleHousing
 ADD OwnerSplitCity Nvarchar(255);
 
 update NashvilleHousing
 SET OwnerSplitCity = PARSENAME(REPLACE(OwnerAddress,',','.'),2)
-
 
 
 ALTER TABLE NashvilleHousing
@@ -171,13 +163,11 @@ SELECT *,
 					UniqueID
 ) row_num
 from SQLDataCleaningProject.dbo.NashvilleHousing
---ORDER BY PARCELID
 )
 
 DELETE  
 From RowNumCTE
 where row_num >1
---order by PropertyAddress
 
 
 WITH RowNumCTE AS(
@@ -192,13 +182,12 @@ SELECT *,
 					UniqueID
 ) row_num
 from SQLDataCleaningProject.dbo.NashvilleHousing
---ORDER BY PARCELID
 )
 
 Select *
 From RowNumCTE
 where row_num >1
---order by PropertyAddress
+
 
 ---------------------------------------------------------------------------------------------------------------------------
 
