@@ -4,10 +4,6 @@ where len(continent)>0
 order by 3,4
 
 
---select*
---from FirstPorfolioProject..CovidVaccinations
---order by 3,4
-
 --Select Data that we are going to be using
 
 select location, date, total_cases, new_cases, total_deaths, population
@@ -34,11 +30,9 @@ order by 1,2
 
 
 --Looking at countries with Highest infecction rates compared to population
---
 
 select location, population, MAX(total_cases) as HighestInfectionCount,MAX((total_cases/population))*100 as MaxCasesPercentage
 from FirstPorfolioProject..CovidDeaths
---where location like 'argentina'
 where len(continent)>0 
 group by location, population
 order by MaxCasesPercentage DESC
@@ -47,7 +41,6 @@ order by MaxCasesPercentage DESC
 
 select location, MAX(cast(total_deaths as int)) as HighestDeathsCount,MAX((total_deaths/total_cases))*100 as MaxCasesPercentage
 from FirstPorfolioProject..CovidDeaths
---where location like 'argentina'
 where len(continent)>0 
 group by continent, population, location
 order by HighestDeathsCount DESC
@@ -60,18 +53,15 @@ order by HighestDeathsCount DESC
 
 select continent, MAX(cast(total_deaths as bigint)) as DeathsCount
 from FirstPorfolioProject..CovidDeaths
---where location like 'argentina'
 where len(continent)>0 
 group by continent
 order by DeathsCount DESC
-
 
 
 --error
 
 select location, MAX(cast(total_deaths as int)) as DeathsCount
 from FirstPorfolioProject..CovidDeaths
---where location like 'argentina'
 where continent =''
 group by location
 order by DeathsCount DESC
@@ -81,32 +71,31 @@ order by DeathsCount DESC
 
 select sum(new_cases) as total_cases,SUM(cast(new_deaths as int)) as Total_Deaths, SUM(cast(new_deaths as int))/SUM(new_cases)*100 as DeathPercentage
 from FirstPorfolioProject..CovidDeaths
---where location like 'argentina'
 where continent <>''
---group by date
 order by 1,2 
+
 
 Select location, SUM(cast(new_deaths as int)) as TotalDeathCount
 From FirstPorfolioProject..CovidDeaths
---Where location like '%states%'
 where continent =''
 and location not in ('World','European Union', 'Upper middle income','High income','Lower middle income', 'International','Low income')
 Group by location
 order by TotalDeathCount desc
 
+
+
 Select Location, Population, date, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
 From FirstPorfolioProject..CovidDeaths
---Where location like '%states%'
 Group by Location, Population, date
 order by PercentPopulationInfected desc
 
 
 select date, sum(new_cases) as total_cases,SUM(cast(new_deaths as bigint)) as Total_Deaths, SUM(cast(new_deaths as int))/SUM(new_cases)*100 as DeathPercentage
 from FirstPorfolioProject..CovidDeaths
---where location like 'argentina'
 where continent <>''
 group by date
 order by 1,2
+
 
 --Looking at total population 
 
@@ -134,7 +123,6 @@ join FirstPorfolioProject..CovidVaccinations vac
 	on dea.location = vac.location
 	and dea.date = vac.date
 	where dea.continent <>''
---ORDER BY 2,3
 )
 
 SELECT *, ((RollingpeopleVaccinated/population)*100) as Porcentage
@@ -163,13 +151,14 @@ join FirstPorfolioProject..CovidVaccinations vac
 	on dea.location = vac.location
 	and dea.date = vac.date
 	where dea.continent <>''
---ORDER BY 2,3
 
 SELECT *, (RollingpeopleVaccinated/population)*100
 FROM #PercentPopulationVaccinated
 
 
 -- CREATE VIEW TO STORE DATA FOR LATER VISUALIZATIONS
+
+
 drop view if exists PercentPopulationVaccinated
 Create View PercentPopulationVaccinated as
 select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations
@@ -180,8 +169,7 @@ join FirstPorfolioProject..CovidVaccinations vac
 	on dea.location = vac.location
 	and dea.date = vac.date
 where dea.continent <>''
---ORDER BY 2,3
 
 
-	 select *
-	 from PercentPopulationVaccinated
+select *
+from PercentPopulationVaccinated
